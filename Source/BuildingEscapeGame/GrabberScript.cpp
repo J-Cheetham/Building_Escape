@@ -2,6 +2,10 @@
 
 
 #include "GrabberScript.h"
+#include "GameFramework/Actor.h"
+#include "Engine/World.h"
+
+#define OUT
 
 // Sets default values for this component's properties
 UGrabberScript::UGrabberScript()
@@ -29,6 +33,11 @@ void UGrabberScript::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
+	FVector PlayerViewPointLocation;
+	FVector PlayerViewPointRotation;
+
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT PlayerViewPointLocation, OUT PlayerViewPointRotation);
+		
+	UE_LOG(LogTemp, Warning, TEXT("%s, %s"), *PlayerViewPointLocation.ToString(), *PlayerViewPointRotation().ToString());
 }
 
