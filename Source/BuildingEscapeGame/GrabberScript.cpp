@@ -4,6 +4,7 @@
 #include "GrabberScript.h"
 #include "GameFramework/Actor.h"
 #include "Engine/World.h"
+#include "DrawDebugHelpers.h"
 
 #define OUT
 
@@ -34,10 +35,16 @@ void UGrabberScript::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	FVector PlayerViewPointLocation;
-	FVector PlayerViewPointRotation;
+	FRotator PlayerViewPointRotation;
+	float Reach = 100.f;
 
 	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT PlayerViewPointLocation, OUT PlayerViewPointRotation);
-		
-	UE_LOG(LogTemp, Warning, TEXT("%s, %s"), *PlayerViewPointLocation.ToString(), *PlayerViewPointRotation().ToString());
+
+	FVector LineTraceEnd = PlayerViewPointLocation + (PlayerViewPointRotation.Vector() * Reach); // defines end of the line
+	DrawDebugLine(GetWorld(), PlayerViewPointLocation, LineTraceEnd, FColor(255, 0, 0), false, 0.f, 0, 10.f); // draws the debug line every frame as pawn moves around world
+
+	FHitResult Hit;
+	GetWorld()->LineTraceSingleByObjectType(OUT Hit, PlayerViewPointLocation, LineTraceEnd, )
+
 }
 
