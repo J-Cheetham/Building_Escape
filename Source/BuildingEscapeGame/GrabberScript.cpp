@@ -24,7 +24,18 @@ void UGrabberScript::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
+	///
+	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+	
+	if (PhysicsHandle)
+	{
+		//Physics handle is found
+	}
+	//Error message if no physic handle component attached
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s is missing physics handle component"), *GetOwner()->GetName())
+	}
 	
 }
 
@@ -36,7 +47,7 @@ void UGrabberScript::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 	FVector PlayerViewPointLocation;
 	FRotator PlayerViewPointRotation;
-	float Reach = 100.f;
+	//float Reach = 100.f;
 
 	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT PlayerViewPointLocation, OUT PlayerViewPointRotation);
 
