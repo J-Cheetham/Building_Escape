@@ -6,6 +6,7 @@
 #include "Engine/World.h"
 #include "DrawDebugHelpers.h"
 
+
 #define OUT
 
 // Sets default values for this component's properties
@@ -24,17 +25,27 @@ void UGrabberScript::BeginPlay()
 {
 	Super::BeginPlay();
 
-	///
-	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
 	
+	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
 	if (PhysicsHandle)
 	{
-		//Physics handle is found
+		UE_LOG(LogTemp, Warning, TEXT("Physics Handle found"))
 	}
 	//Error message if no physic handle component attached
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s is missing physics handle component"), *GetOwner()->GetName())
+	}
+
+	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
+	if (InputComponent)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Input Component found"))
+	}
+	//Error message if no physic handle component attached
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s is missing Input Component"), *GetOwner()->GetName())
 	}
 	
 }
