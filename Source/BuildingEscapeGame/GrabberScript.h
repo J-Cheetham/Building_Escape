@@ -45,4 +45,10 @@ private:
 	//Ray-cast and grab/release what's in reach
 	void Grab();
 	void Release(); 
+
+	//Returns current start of line cast
+	FVector GetLineCastStart();
+
+	//Returns current end of the line cast
+	FVector GetLineCastEnd();
 };

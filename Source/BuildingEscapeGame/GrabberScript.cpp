@@ -22,7 +22,6 @@ UGrabberScript::UGrabberScript()
 void UGrabberScript::BeginPlay()
 {
 	Super::BeginPlay();
-
 	FindAttachedPhysicsHandle();
 	FindAttachedInputComponent();
 }
@@ -33,17 +32,12 @@ void UGrabberScript::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	FVector PlayerViewPointLocation;
-	FRotator PlayerViewPointRotation;
-	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT PlayerViewPointLocation, OUT PlayerViewPointRotation);
-
-	///Set up the line tracing using linetracesinglebyobjecttype
-	FVector LineTraceEnd = PlayerViewPointLocation + PlayerViewPointRotation.Vector() * Reach;
+	//Get player reach line end
 
 	//Move the grabbed component to the end of the line trace
 	if (PhysicsHandle->GrabbedComponent)
 	{
-		PhysicsHandle->SetTargetLocation(LineTraceEnd);
+		PhysicsHandle->SetTargetLocation(GetLineCastEnd());
 	}
 }
 
@@ -51,16 +45,9 @@ void UGrabberScript::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 FHitResult UGrabberScript::GetFirstPhysicsBodyInReach()
 {
-	//Gets the player view point location and rotation
-	FVector PlayerViewPointLocation;
-	FRotator PlayerViewPointRotation;
-	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT PlayerViewPointLocation, OUT PlayerViewPointRotation);
-
-	///Set up the line tracing using linetracesinglebyobjecttype
-	FVector LineTraceEnd = PlayerViewPointLocation + PlayerViewPointRotation.Vector() * Reach;
 	FHitResult Hit;
 	FCollisionQueryParams TraceParameters(FName(TEXT("")), false, GetOwner());
-	GetWorld()->LineTraceSingleByObjectType(OUT Hit, PlayerViewPointLocation, LineTraceEnd, FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody), TraceParameters);
+	GetWorld()->LineTraceSingleByObjectType(OUT Hit, GetLineCastStart(), GetLineCastEnd(), FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody), TraceParameters);
 
 	///See the name of what we hit
 	AActor* ActorHit = Hit.GetActor();
@@ -78,8 +65,7 @@ void UGrabberScript::FindAttachedInputComponent()
 	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
 	if (InputComponent)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Input Component found"))
-			InputComponent->BindAction("Grab", IE_Pressed, this, &UGrabberScript::Grab);
+		InputComponent->BindAction("Grab", IE_Pressed, this, &UGrabberScript::Grab);
 		InputComponent->BindAction("Grab", IE_Released, this, &UGrabberScript::Release);
 	}
 
@@ -93,12 +79,7 @@ void UGrabberScript::FindAttachedInputComponent()
 void UGrabberScript::FindAttachedPhysicsHandle()
 {
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-	if (PhysicsHandle)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Physics Handle found"))
-	}
-	//Error message if no physic handle component attached
-	else
+	if (PhysicsHandle == nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s is missing physics handle component"), *GetOwner()->GetName())
 	}
@@ -115,7 +96,7 @@ void UGrabberScript::Grab()
 	///If the hit result returns an actor then attach a physics handle to that actor
 	if (ActorHit)
 	{
-		PhysicsHandle->GrabComponentAtLocation(ComponentToGrab, NAME_None, ComponentToGrab->GetOwner()->GetActorLocation());
+		PhysicsHandle->GrabComponentAtLocationWithRotation(ComponentToGrab, NAME_None, ComponentToGrab->GetOwner()->GetActorLocation(), GetOwner()->GetActorRotation());
 	}
 
 }
@@ -126,4 +107,23 @@ void UGrabberScript::Release()
 		PhysicsHandle->ReleaseComponent();
 }
 
+FVector UGrabberScript::GetLineCastEnd()
+{
+	FVector PlayerViewPointLocation;
+	FRotator PlayerViewPointRotation;
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT PlayerViewPointLocation, OUT PlayerViewPointRotation);
+
+	///Set up the line tracing using linetracesinglebyobjecttype
+	return PlayerViewPointLocation + PlayerViewPointRotation.Vector() * Reach;
+
+}
+FVector UGrabberScript::GetLineCastStart()
+{
+	FVector PlayerViewPointLocation;
+	FRotator PlayerViewPointRotation;
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT PlayerViewPointLocation, OUT PlayerViewPointRotation);
+
+	///Set up the line tracing using linetracesinglebyobjecttype
+	return PlayerViewPointLocation;
+}
 
