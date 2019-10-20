@@ -32,6 +32,8 @@ void UGrabberScript::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	//Makes sure Unreal doesn't crash if it can't find the physics handler
+	if (!PhysicsHandle) { return; }
 	//Move the grabbed component to the end of the line trace
 	if (PhysicsHandle->GrabbedComponent)
 	{
@@ -95,6 +97,7 @@ void UGrabberScript::Grab()
 	///If the hit result returns an actor then attach a physics handle to that actor
 	if (ActorHit)
 	{
+		if (!PhysicsHandle) { return; }
 		PhysicsHandle->GrabComponentAtLocationWithRotation(ComponentToGrab, NAME_None, ComponentToGrab->GetOwner()->GetActorLocation(), GetOwner()->GetActorRotation());
 	}
 
@@ -102,8 +105,9 @@ void UGrabberScript::Grab()
 
 void UGrabberScript::Release()
 {
+	if (!PhysicsHandle) { return; }
 	UE_LOG(LogTemp, Warning, TEXT("Grab released"))
-		PhysicsHandle->ReleaseComponent();
+	PhysicsHandle->ReleaseComponent();
 }
 
 FVector UGrabberScript::GetLineCastEnd()
