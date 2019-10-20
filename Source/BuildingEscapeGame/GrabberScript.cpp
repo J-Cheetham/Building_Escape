@@ -32,8 +32,6 @@ void UGrabberScript::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	//Get player reach line end
-
 	//Move the grabbed component to the end of the line trace
 	if (PhysicsHandle->GrabbedComponent)
 	{
@@ -45,6 +43,7 @@ void UGrabberScript::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 FHitResult UGrabberScript::GetFirstPhysicsBodyInReach()
 {
+	//Using a method requiring OUT arguments that get modified and returned
 	FHitResult Hit;
 	FCollisionQueryParams TraceParameters(FName(TEXT("")), false, GetOwner());
 	GetWorld()->LineTraceSingleByObjectType(OUT Hit, GetLineCastStart(), GetLineCastEnd(), FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody), TraceParameters);
