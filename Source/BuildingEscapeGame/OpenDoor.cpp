@@ -30,34 +30,19 @@ void UOpenDoor::BeginPlay()
 	
 }
 
-void UOpenDoor::OpenDoor()  //define rotation and set it
-{
-	//Owner->SetActorRotation(FRotator(0.f, OpenAngle, 0.f));
-	OnOpenRequest.Broadcast();
-}
-
-void UOpenDoor::CloseDoor()
-{
-	//Owner->SetActorRotation(FRotator(0.f, 0.f, 0.f));
-	OnCloseRequest.Broadcast();
-}
-
 // Called every frame
 void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-
-
-	if (GetTotalMassOfObjectsOnPressurePlate() >= 30.f) //if the total mass of objects on the pressure plate is above a certain threshold
+	if (GetTotalMassOfObjectsOnPressurePlate() >= TriggerMass) //if the total mass of objects on the pressure plate is above a certain threshold
 	{
-		OpenDoor();
-		LastDoorOpenTime = GetWorld()->GetTimeSeconds();
+		OnOpenRequest.Broadcast();
 	}
 	
-	if (GetWorld()->GetTimeSeconds() - LastDoorOpenTime > DoorCloseDelay)
+	if (GetTotalMassOfObjectsOnPressurePlate() < TriggerMass)
 	{
-		CloseDoor();
+		OnCloseRequest.Broadcast();
 	}
 }
 

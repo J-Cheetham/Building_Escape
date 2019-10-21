@@ -42,7 +42,7 @@ private:
 	ATriggerVolume* PressurePlate = nullptr;
 
 	UPROPERTY(EditAnywhere)
-	float OpenAngle = 90.f;
+	float TriggerMass = 30.f;
 
 	AActor* Owner;
 
